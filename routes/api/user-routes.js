@@ -62,6 +62,39 @@ router.post('/', (req, res) => {
     });
 });
 
+// login route -> http://localhost:3001/api/users/login
+// We use a POST request for logins because A GET method carries the request parameter appended in the URL string, whereas a POST method carries the request parameter in req.body
+router.post('/login', (req, res) => {
+  // expects {email: 'lernantino@gmail.com', password: 'password1234'}
+  User.findOne({
+    where: {
+      email: req.body.email // query the User table using the findOne() method for the email entered by the user and assigned it to req.body.email.
+      
+    }
+  }).then(dbUserData => {
+    if (!dbUserData) {
+      res.status(400).json({ message: 'No user with that email address!' }); // If the user with that email was not found, a message is sent back as a response to the client. 
+      return;
+    }
+    // if the email was found in the database, the next step will be to verify the user's identity by matching the password from the user and the hashed password in the database.
+    // res.json({ user: dbUserData });
+
+    // verify user
+
+    // Note that the instance method was called on the user retrieved from the database, dbUserData. Because the instance 
+    // method returns a Boolean, we can use it in a conditional statement to verify whether the user has been verified or not.
+    const validPassword = dbUserData.checkPassword(req.body.password);
+
+    if (!validPassword) { // if the match returns a false value, an error message is sent back to the client, and the return statement exits out of the function immediately.
+      res.status(400).json({ message: 'Incorrect password!' });
+      return;
+    }
+    // if there is a match, the conditional statement block is ignored, and a response with the data and the message "You are now logged in." is sent instead.
+    res.json({ user: dbUserData, message: 'You are now logged in!' });
+  })
+
+})
+
 
 // PUT /api/users/1
 
@@ -77,6 +110,7 @@ router.put('/:id', (req, res) => {
 
   // pass in req.body instead to only update what's passed through
   User.update(req.body, {
+    individualHooks: true,
     where: {
       id: req.params.id
     }
