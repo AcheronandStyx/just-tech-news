@@ -1,0 +1,15 @@
+// here we are collecting the packaged group of API endpoints and prefixing them with the path /api. 
+// This level of organization makes the app scalable and the codebase easy to work with
+const router = require('express').Router();
+
+const apiRoutes = require('./api');
+
+router.use('/api', apiRoutes);
+
+// This is so if we make a request to any endpoint that doesn't exist, we'll receive a 404 error 
+// indicating we have requested an incorrect resource, another RESTful API practice.
+router.use((req, res) => {
+  res.status(404).end();
+});
+
+module.exports = router;
