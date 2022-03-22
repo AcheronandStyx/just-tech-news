@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User } = require('../../models');
+const { User, Post, Vote } = require("../../models");
 
 // get all users
 // Access our User model and run .findAll() method
