@@ -1,16 +1,12 @@
-const express = require('express');
-const routes = require('./controllers');
-const sequelize = require('./config/connection');
 const path = require('path');
-// Set up the template engine
+const express = require('express');
+const session = require('express-session');
 const exphbs = require('express-handlebars');
-const hbs = exphbs.create({});
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-//This code sets up an Express.js session and connects the session to our Sequelize database.
-const session = require('express-session');
+const sequelize = require('./config/connection');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 const sess = {
@@ -25,20 +21,17 @@ const sess = {
 
 app.use(session(sess));
 
+const hbs = exphbs.create({});
 
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
-// Set up the template engine
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
-// turn on routes
-app.use(routes);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// turn on connection to db and server
+app.use(require('./controllers/'));
+
 sequelize.sync({ force: false }).then(() => {
   app.listen(PORT, () => console.log('Now listening'));
 });
