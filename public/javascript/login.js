@@ -15,7 +15,7 @@ async function loginFormHandler(event) {
     });
 
     if (response.ok) {
-      document.location.replace("/");
+      document.location.replace("/dashboard");
     } else {
       alert(response.statusText);
     }
@@ -25,12 +25,10 @@ async function loginFormHandler(event) {
 async function signupFormHandler(event) {
   event.preventDefault();
 
-  // get user entered info
   const username = document.querySelector("#username-signup").value.trim();
   const email = document.querySelector("#email-signup").value.trim();
   const password = document.querySelector("#password-signup").value.trim();
 
-  // if everything provided then post the new user
   if (username && email && password) {
     const response = await fetch("/api/users", {
       method: "post",
@@ -41,15 +39,14 @@ async function signupFormHandler(event) {
       }),
       headers: { "Content-Type": "application/json" },
     });
-    // check the response status
+
     if (response.ok) {
-      console.log("success"); // if success log it
+      document.location.replace("/");
     } else {
-      alert(response.statusText); // otherwise alert the error
+      alert(response.statusText);
     }
   }
 }
-
 
 document
   .querySelector(".login-form")
